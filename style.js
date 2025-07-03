@@ -2,62 +2,61 @@ let texts = [
   'What you do today can improve all your tomorow',
   'Dont watch the clock; do what it does.Keep going',
 ];
+
 let firstGap = texts[0];
 let secondGap = texts[1];
-let textsWord = firstGap.split('');
+let currentGap = firstGap;
+let startTime = null;
+
 const h1 = document.getElementById('h1');
-for (let i = 0; i < firstGap.length; i++) {
-  h1.innerHTML += `<span class='span'>${firstGap[i]}</span>`;
+const inputElement = document.getElementById('input');
+const resultElement = document.getElementById('result');
+
+function renderText(text, className) {
+  h1.innerHTML = '';
+  for (let i = 0; i < text.length; i++) {
+    h1.innerHTML += `<span class="${className}">${text[i]}</span>`;
+  }
 }
-const spanVal = [...document.getElementsByClassName('span')];
 
-let startTime;
+renderText(currentGap, 'span1');
 
-function input(input) {
-  let allCorrect = false;
+function input(inputBox) {
   if (!startTime) {
     startTime = Date.now();
   }
 
-  if (firstGap === input.value) {
-    finish();
-  } else {
-    for (let i = 0; i < spanVal.length; i++) {
-      const element = spanVal[i];
-      if (element.innerText === input.value[i]) {
-        element.style.color = 'green';
-      } else {
-        element.style.color = 'red';
-      }
-    }
-  }
-  if (input.value === firstGap) {
-    h1.innerHTML = '';
-    input.value = '';
+  const userInput = inputBox.value;
+  const spans = [
+    ...document.getElementsByClassName(
+      currentGap === firstGap ? 'span1' : 'span2'
+    ),
+  ];
 
-    for (let i = 0; i < secondGap.length; i++) {
-      h1.innerHTML += `<span class='span'>${secondGap[i]}</span>`;
-      console.log(secondGap[i]);
+  for (let i = 0; i < spans.length; i++) {
+    if (userInput[i] == null) {
+      spans[i].style.color = 'black';
+    } else if (userInput[i] === currentGap[i]) {
+      spans[i].style.color = 'green';
+    } else {
+      spans[i].style.color = 'red';
     }
   }
-  if (secondGap === input.value) {
-    for (let i = 0; i < spanVal.length; i++) {
-      const element = spanVal[i];
-      if (element.innerText === input.value[i]) {
-        element.style.color = 'green';
-      } else {
-        element.style.color = 'red';
-      }
+
+  if (userInput === currentGap) {
+    if (currentGap === firstGap) {
+      currentGap = secondGap;
+      inputBox.value = '';
+      renderText(currentGap, 'span2');
+    } else {
+      finish();
     }
   }
 }
 
 function finish() {
-  // console.log('hehehh');
-
   const endTime = Date.now();
-  const result = Math.round((endTime - startTime) / 1000);
-
-  const resultElement = document.getElementById('result');
-  resultElement.textContent = result;
+  const duration = Math.round((endTime - startTime) / 1000);
+  resultElement.textContent = `✅ Finished in ${duration} seconds`;
+  h1.innerHTML = '<strong>🎉 All done!</strong>';
 }
